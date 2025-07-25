@@ -144,26 +144,42 @@ def run_http_server():
 # Remove the async run_bot function since we don't need it anymore
 
 # Main execution
+
+WEBHOOK_PATH = "/webhook"
+BASE_URL = os.getenv("RENDER_EXTERNAL_URL") or "https://telegram-bot-bohe.onrender.com"  # Update this
+WEBHOOK_URL = BASE_URL + WEBHOOK_PATH
+
 def main():
-    print("🚀 Starting Earning Bot Application...")
-    
-    # Start HTTP server in background thread
+    print("🚀 Starting Earning Bot with Webhook...")
+
+    # Start HTTP server for health checks
     http_thread = threading.Thread(target=run_http_server)
     http_thread.daemon = True
     http_thread.start()
-    
-    # Give HTTP server time to start
-    import time
+
     time.sleep(2)
-    
-    # Create and start bot application
-    print("🤖 Creating bot application...")
-    
+
     if not BOT_TOKEN:
-        print("❌ ERROR: BOT_TOKEN not found in environment variables!")
+        print("❌ BOT_TOKEN is missing")
         return
-    
+
     application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Register your handlers
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CallbackQueryHandler(button_callback))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    print(f"🔗 Setting webhook to: {WEBHOOK_URL}")
+
+    # Run webhook server
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000)),
+        webhook_path=WEBHOOK_PATH,
+        webhook_url=WEBHOOK_URL
+    )
 
     # Add handlers
     application.add_handler(CommandHandler("start", start))
@@ -174,8 +190,7 @@ def main():
     print("✅ Bot handlers registered")
     print("🚀 Starting polling...")
     
-    # Start polling (this handles the event loop internally)
-    application.run_polling()
+
 
 if __name__ == '__main__':
     main()
