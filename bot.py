@@ -174,22 +174,14 @@ def main():
 
     print(f"🔗 Setting webhook to: {WEBHOOK_URL}")
 
-    # Run webhook server
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000)),
-        webhook_path=WEBHOOK_PATH,
-
+    # Start the bot using polling
+    application.run_polling(
+        drop_pending_updates=True,
+        allowed_updates=Update.ALL_TYPES
     )
 
-    # Add handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CallbackQueryHandler(button_callback))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
     print("✅ Bot handlers registered")
-    print("🚀 Starting polling...")
+    print("🚀 Bot is running...")
     
 
 
