@@ -51,11 +51,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         proceed_message = """✅ Welcome! You've joined our channels.
 
 🎁 GIVEAWAY DETAILS:
-• Airtime giveaway is now live
-• Winners will be announced soon
+• Join all required channels
 • Stay active in our channels
 
-📞 CONTACT: @emmzy for support
+
+📞 CONTACT: @Ayotheg for support
 
 Thank you for joining! 🚀"""
         
@@ -86,7 +86,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • /start - Main menu
 • /help - Show this help
 
-📞 Contact Support: @emmzy
+📞 Contact Support: @Ayotheg
 🔄 Use /start to go back to main menu"""
         
         await update.message.reply_text(help_message)
@@ -114,8 +114,7 @@ This bot helps you participate in earning and giveaways by joining channels and 
 • /start - Main menu
 • /help - Show this help
 
-📞 SUPPORT: @emmzy
-
+📞 SUPPORT: @Ayotheg
 🔄 Ready to start? Use /start"""
     
     await update.message.reply_text(help_text)
