@@ -50,12 +50,12 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Show instructions or next steps (Fixed comment formatting)
         proceed_message = """✅ Welcome! You've joined our channels.
 
-🎁 GIVEAWAY DETAILS: Not available now
-# • Airtime giveaway is now live
-# • Winners will be announced soon
-# • Stay active in our channels
+🎁 GIVEAWAY DETAILS:
+• Airtime giveaway is now live
+• Winners will be announced soon
+• Stay active in our channels
 
-📞 CONTACT: @Ayotheg for support
+📞 CONTACT: @emmzy for support
 
 Thank you for joining! 🚀"""
         
@@ -86,7 +86,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • /start - Main menu
 • /help - Show this help
 
-📞 Contact Support: @Ayotheg
+📞 Contact Support: @emmzy
 🔄 Use /start to go back to main menu"""
         
         await update.message.reply_text(help_message)
@@ -114,7 +114,7 @@ This bot helps you participate in earning and giveaways by joining channels and 
 • /start - Main menu
 • /help - Show this help
 
-📞 SUPPORT: @Ayotheg
+📞 SUPPORT: @emmzy
 
 🔄 Ready to start? Use /start"""
     
@@ -142,9 +142,23 @@ def run_http_server():
     print(f"🌐 HTTP Server starting on port {port}")
     flask_app.run(host='0.0.0.0', port=port, debug=False)
 
-# Main bot function
-async def run_bot():
-    print("🤖 Starting Telegram Bot...")
+# Remove the async run_bot function since we don't need it anymore
+
+# Main execution
+def main():
+    print("🚀 Starting Earning Bot Application...")
+    
+    # Start HTTP server in background thread
+    http_thread = threading.Thread(target=run_http_server)
+    http_thread.daemon = True
+    http_thread.start()
+    
+    # Give HTTP server time to start
+    import time
+    time.sleep(2)
+    
+    # Create and start bot application
+    print("🤖 Creating bot application...")
     
     if not BOT_TOKEN:
         print("❌ ERROR: BOT_TOKEN not found in environment variables!")
@@ -161,26 +175,8 @@ async def run_bot():
     print("✅ Bot handlers registered")
     print("🚀 Starting polling...")
     
-    # Start polling
-    await application.run_polling()
+    # Start polling (this handles the event loop internally)
+    application.run_polling()
 
-# Main execution
 if __name__ == '__main__':
-    print("🚀 Starting Earning Bot Application...")
-    
-    # Start HTTP server in background thread
-    http_thread = threading.Thread(target=run_http_server)
-    http_thread.daemon = True
-    http_thread.start()
-    
-    # Give HTTP server time to start
-    import time
-    time.sleep(2)
-    
-    # Start bot
-    try:
-        asyncio.run(run_bot())
-    except Exception as e:
-        print(f"❌ Error starting bot: {e}")
-        import traceback
-        traceback.print_exc()
+    main()
