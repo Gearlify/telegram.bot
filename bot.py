@@ -2,9 +2,11 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 import os
 from dotenv import load_dotenv
-os.environ.setdefault('PORT', '10000')
+import threading
+import asyncio
 
-load_dotenv()  # Load variables from .env
+os.environ.setdefault('PORT', '10000')
+load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -13,7 +15,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Create inline keyboard with your channels/links
     keyboard = [
         [
-            InlineKeyboardButton("🔹 PAYOUT", url="https://https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
+            InlineKeyboardButton("🔹 PAYOUT", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
             InlineKeyboardButton("🔹 MUST JOIN", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t")
         ],
         [
@@ -45,15 +47,15 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()  # Acknowledge the callback
     
     if query.data == "proceed":
-        # Show instructions or next steps
+        # Show instructions or next steps (Fixed comment formatting)
         proceed_message = """✅ Welcome! You've joined our channels.
 
-# 🎁 GIVEAWAY DETAILS:
+🎁 GIVEAWAY DETAILS: Not available now
 # • Airtime giveaway is now live
 # • Winners will be announced soon
 # • Stay active in our channels
 
-📞 CONTACT: @emmzy for support
+📞 CONTACT: @Ayotheg for support
 
 Thank you for joining! 🚀"""
         
@@ -73,99 +75,6 @@ Thank you for joining! 🚀"""
 🔄 Use /start to go back to main menu"""
         await query.edit_message_text(help_message)
 
-# Alternative start with membership verification
-async def start_with_verification(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        [
-            InlineKeyboardButton("🎯 PAYOUT CHANNEL", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
-        ],
-        [
-            InlineKeyboardButton("📢 Channel 1", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
-            InlineKeyboardButton("📢 Channel 2", url="https://chat.whatsapp.com/H6AJZ6VbaUv9cEObp7QrDq?mode=r_t")
-        ],
-        [
-            InlineKeyboardButton("📢 Channel 3", url="https://chat.whatsapp.com/J4G1P2NxySpDxHNIo7xSdu?mode=r_t"),
-            InlineKeyboardButton("📢 Channel 4", url="https://chat.whatsapp.com/LajUCqJmJ7sCP3A5Rs3HJv?mode=r_t")
-        ],
-        [
-            InlineKeyboardButton("✅ Check Membership", callback_data="check_membership"),
-            InlineKeyboardButton("❓ Help", callback_data="help")
-        ],
-        [
-            InlineKeyboardButton("🚀 Proceed", callback_data="proceed")
-        ]
-    ]
-    
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    welcome_text = """🎉 WELCOME TO EARNING BOT!
-
-🎁 EARNING BOT LAUNCHED AND ACTIVE
-
-📋 TO GET STARTED:
-1️⃣ Join all our channels below
-2️⃣ Click "Check Membership" to verify
-3️⃣ Click "Proceed" to continue
-
-👇 JOIN OUR CHANNELS TO GET STARTED"""
-    
-    await update.message.reply_text(
-        welcome_text,
-        reply_markup=reply_markup
-    )
-
-# Function to check if user joined channels
-async def check_membership(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    user_id = query.from_user.id
-    
-    # List of your channel usernames (without @)
-    channels = ["your_payout_channel", "channel1", "channel2", "channel3", "channel4"]
-    
-    try:
-        all_joined = True
-        not_joined = []
-        
-        for channel in channels:
-            try:
-                member = await context.bot.get_chat_member(f"@{channel}", user_id)
-                if member.status in ['left', 'kicked']:
-                    all_joined = False
-                    not_joined.append(channel)
-            except Exception:
-                # If can't check (bot not admin), assume not joined
-                all_joined = False
-                not_joined.append(channel)
-        
-        if all_joined:
-            # Create a "proceed" button after verification
-            keyboard = [[InlineKeyboardButton("🚀 Continue", callback_data="proceed")]]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            
-            await query.edit_message_text(
-                "✅ VERIFIED! You've joined all required channels.\n\nClick Continue to proceed.",
-                reply_markup=reply_markup
-            )
-        else:
-            # Show which channels they haven't joined
-            missing_channels = "\n".join([f"• @{ch}" for ch in not_joined])
-            
-            # Create back button
-            keyboard = [[InlineKeyboardButton("🔙 Back to Menu", callback_data="back_to_menu")]]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            
-            await query.edit_message_text(
-                f"❌ Please join these channels:\n\n{missing_channels}\n\nThen try again.",
-                reply_markup=reply_markup
-            )
-    
-    except Exception as e:
-        await query.edit_message_text("❌ Could not verify membership. Please ensure you've joined all channels and try again.")
-
-# Handle back to menu
-async def back_to_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await start(update, context)
-
 # Handle general messages
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text.lower()
@@ -177,7 +86,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 • /start - Main menu
 • /help - Show this help
 
-📞 Contact Support: @emmzy
+📞 Contact Support: @Ayotheg
 🔄 Use /start to go back to main menu"""
         
         await update.message.reply_text(help_message)
@@ -205,48 +114,73 @@ This bot helps you participate in earning and giveaways by joining channels and 
 • /start - Main menu
 • /help - Show this help
 
-📞 SUPPORT: @emmzy
+📞 SUPPORT: @Ayotheg
 
 🔄 Ready to start? Use /start"""
     
     await update.message.reply_text(help_text)
 
-# Main application setup
-if __name__ == '__main__':
+# HTTP Server for Render
+def run_http_server():
     from flask import Flask
-    import threading
     
-    # Simple HTTP server
     flask_app = Flask(__name__)
     
     @flask_app.route('/')
     def index():
-        return "Bot is running!"
+        return """
+        <h1>🤖 Earning Bot Server</h1>
+        <p>Bot Status: ✅ Running</p>
+        <p>Server is active and ready!</p>
+        """
     
-    def run_server():
-        port = int(os.environ.get('PORT', 10000))
-        flask_app.run(host='0.0.0.0', port=port)
+    @flask_app.route('/health')
+    def health():
+        return {"status": "healthy", "bot": "active"}
     
-    # Start HTTP server
-    server_thread = threading.Thread(target=run_server)
-    server_thread.start()
+    port = int(os.environ.get('PORT', 10000))
+    print(f"🌐 HTTP Server starting on port {port}")
+    flask_app.run(host='0.0.0.0', port=port, debug=False)
+
+# Main bot function
+async def run_bot():
+    print("🤖 Starting Telegram Bot...")
+    
+    if not BOT_TOKEN:
+        print("❌ ERROR: BOT_TOKEN not found in environment variables!")
+        return
+    
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    # Add handlers
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CallbackQueryHandler(button_callback))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    print("✅ Bot handlers registered")
+    print("🚀 Starting polling...")
+    
+    # Start polling
+    await application.run_polling()
+
+# Main execution
+if __name__ == '__main__':
+    print("🚀 Starting Earning Bot Application...")
+    
+    # Start HTTP server in background thread
+    http_thread = threading.Thread(target=run_http_server)
+    http_thread.daemon = True
+    http_thread.start()
+    
+    # Give HTTP server time to start
+    import time
+    time.sleep(2)
     
     # Start bot
-    import asyncio
-
-    async def main():
-        application = ApplicationBuilder().token(BOT_TOKEN).build()
-
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("help", help_command))
-        application.add_handler(CallbackQueryHandler(button_callback))
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
-        # Optionally add the alternative start with verification
-        # application.add_handler(CommandHandler("start", start_with_verification))
-        # application.add_handler(CallbackQueryHandler(check_membership, pattern="check_membership"))
-        # application.add_handler(CallbackQueryHandler(back_to_menu, pattern="back_to_menu"))
-
-        await application.run_polling()
-
-    asyncio.run(main())
+    try:
+        asyncio.run(run_bot())
+    except Exception as e:
+        print(f"❌ Error starting bot: {e}")
+        import traceback
+        traceback.print_exc()
