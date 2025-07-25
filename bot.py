@@ -191,7 +191,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Help command
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    help_text = """❓ RECHARGE POINTS BOT HELP
+    help_text = """❓ EARNING BOT HELP
 
 🎁 ABOUT THIS BOT:
 This bot helps you participate in earning and giveaways by joining channels and completing tasks.
