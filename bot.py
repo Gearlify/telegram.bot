@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 import os
 from dotenv import load_dotenv
+os.environ.setdefault('PORT', '10000')
 
 load_dotenv()  # Load variables from .env
 
@@ -12,7 +13,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Create inline keyboard with your channels/links
     keyboard = [
         [
-            InlineKeyboardButton("🔹 PAYOUT", url="Nil"),
+            InlineKeyboardButton("🔹 PAYOUT", url="https://https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
             InlineKeyboardButton("🔹 MUST JOIN", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t")
         ],
         [
@@ -76,7 +77,7 @@ Thank you for joining! 🚀"""
 async def start_with_verification(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
-            InlineKeyboardButton("🎯 PAYOUT CHANNEL", url="Nil"),
+            InlineKeyboardButton("🎯 PAYOUT CHANNEL", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
         ],
         [
             InlineKeyboardButton("📢 Channel 1", url="https://chat.whatsapp.com/KvW5wtHgNRK8KkQrYO3MaI?mode=r_t"),
