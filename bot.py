@@ -212,18 +212,41 @@ This bot helps you participate in earning and giveaways by joining channels and 
     await update.message.reply_text(help_text)
 
 # Main application setup
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    
-    # Add handlers
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CallbackQueryHandler(button_callback))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    
-    # Start the bot
-    print("🤖 EARNING Bot is running...")
-    app.run_polling()
-
 if __name__ == '__main__':
-    main()
+    from flask import Flask
+    import threading
+    
+    # Simple HTTP server
+    flask_app = Flask(__name__)
+    
+    @flask_app.route('/')
+    def index():
+        return "Bot is running!"
+    
+    def run_server():
+        port = int(os.environ.get('PORT', 10000))
+        flask_app.run(host='0.0.0.0', port=port)
+    
+    # Start HTTP server
+    server_thread = threading.Thread(target=run_server)
+    server_thread.start()
+    
+    # Start bot
+    import asyncio
+
+    async def main():
+        application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("help", help_command))
+        application.add_handler(CallbackQueryHandler(button_callback))
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+        # Optionally add the alternative start with verification
+        # application.add_handler(CommandHandler("start", start_with_verification))
+        # application.add_handler(CallbackQueryHandler(check_membership, pattern="check_membership"))
+        # application.add_handler(CallbackQueryHandler(back_to_menu, pattern="back_to_menu"))
+
+        await application.run_polling()
+
+    asyncio.run(main())
